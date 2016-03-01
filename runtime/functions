@@ -247,6 +247,9 @@ initialize_database() {
   set_postgresql_param "log_directory" "${PG_LOGDIR}"
   set_postgresql_param "log_filename" "postgresql-${PG_VERSION}-main.log"
 
+  # record commit time of transactions
+  set_postgresql_param "track_commit_timestamp" "on"
+
   # allow remote connections to postgresql database
   set_hba_param "host all all 0.0.0.0/0 md5"
 }
