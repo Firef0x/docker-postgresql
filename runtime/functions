@@ -7,6 +7,10 @@ PG_HBA_CONF=${PG_DATADIR}/pg_hba.conf
 PG_IDENT_CONF=${PG_DATADIR}/pg_ident.conf
 PG_RECOVERY_CONF=${PG_DATADIR}/recovery.conf
 
+TIMEZONE=$TZ
+[[ -z "$TIMEZONE" && -f /etc/timezone ]] && TIMEZONE=$(cat /etc/timezone)
+#[[ -f /etc/timezone ]] && TIMEZONE=$(cat /etc/timezone)
+
 ## Execute command as PG_USER
 exec_as_postgres() {
   sudo -HEu ${PG_USER} "$@"
@@ -252,6 +256,12 @@ initialize_database() {
 
   # allow remote connections to postgresql database
   set_hba_param "host all all 0.0.0.0/0 md5"
+  
+  # set system timezone
+  if [[ -n "$TIMEZONE" ]]; then
+    set_postgresql_param "timezone" "${TIMEZONE}"
+    set_postgresql_param "log_timezone" "${TIMEZONE}"
+  fi
 }
 
 trust_localnet() {
